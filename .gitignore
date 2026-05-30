@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# IDE
+.vscode/
+.idea/
+.vs/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# NOTE: model.pkl and scaler.pkl are intentionally NOT ignored.
+# They must be committed so Vercel can bundle them in the deployment.
+# model.pkl
+# scaler.pkl

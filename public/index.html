@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsureCost-AI — Health Insurance Cost Predictor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Navigation bar ──────────────────────────────────────────────────── -->
+  <nav>
+    <div class="nav-brand">
+      <span class="icon">🏥</span>
+      <h1>InsureCost-AI <span>Health Insurance Cost Predictor</span></h1>
+    </div>
+    <div class="nav-badge">POC v1.0</div>
+  </nav>
+
+  <!-- ── Main page content ────────────────────────────────────────────────── -->
+  <main class="page">
+
+    <!-- ── Input form card ──────────────────────────────────────────────── -->
+    <div class="card" id="form-card">
+      <div class="card-header">
+        <h2>Member Details</h2>
+        <p>Enter the 7 fields below and click Predict to estimate annual claim cost.</p>
+      </div>
+      <div class="card-body">
+        <form id="predict-form" novalidate>
+          <div class="form-grid">
+
+            <!-- Age -->
+            <div class="form-group">
+              <label for="age">Age <span class="hint">years</span></label>
+              <input type="number" id="age" name="age"
+                     placeholder="e.g. 45" min="18" max="100" step="1" required />
+              <span class="field-hint">18 – 100</span>
+            </div>
+
+            <!-- Gender -->
+            <div class="form-group">
+              <label for="gender">Gender</label>
+              <select id="gender" name="gender" required>
+                <option value="" disabled selected>Select…</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+
+            <!-- Chronic Conditions -->
+            <div class="form-group">
+              <label for="chronic_condition_count">
+                Chronic Conditions <span class="hint">count</span>
+              </label>
+              <input type="number" id="chronic_condition_count"
+                     name="chronic_condition_count"
+                     placeholder="e.g. 2" min="0" max="20" step="1" required />
+              <span class="field-hint">0 – 20  (e.g. Diabetes, Hypertension)</span>
+            </div>
+
+            <!-- Comorbidity Index -->
+            <div class="form-group">
+              <label for="comorbidity_index">
+                Comorbidity Index <span class="hint">Charlson score</span>
+              </label>
+              <input type="number" id="comorbidity_index"
+                     name="comorbidity_index"
+                     placeholder="e.g. 3" min="0" max="30" step="1" required />
+              <span class="field-hint">0 – 30  (higher = more severe conditions)</span>
+            </div>
+
+            <!-- Prior 12-month cost -->
+            <div class="form-group full-width">
+              <label for="prior_12m_cost">
+                Prior 12-Month Claim Cost <span class="hint">USD</span>
+              </label>
+              <input type="number" id="prior_12m_cost"
+                     name="prior_12m_cost"
+                     placeholder="e.g. 8200" min="0" max="1000000" step="1" required />
+              <span class="field-hint">Total claims paid in the past 12 months ($)</span>
+            </div>
+
+            <!-- ER Visits -->
+            <div class="form-group">
+              <label for="er_visit_count_12m">
+                ER Visits <span class="hint">last 12 months</span>
+              </label>
+              <input type="number" id="er_visit_count_12m"
+                     name="er_visit_count_12m"
+                     placeholder="e.g. 1" min="0" max="50" step="1" required />
+              <span class="field-hint">0 – 50</span>
+            </div>
+
+            <!-- Inpatient Days -->
+            <div class="form-group">
+              <label for="inpatient_days_12m">
+                Inpatient Hospital Days <span class="hint">last 12 months</span>
+              </label>
+              <input type="number" id="inpatient_days_12m"
+                     name="inpatient_days_12m"
+                     placeholder="e.g. 3" min="0" max="365" step="1" required />
+              <span class="field-hint">0 – 365</span>
+            </div>
+
+          </div><!-- /.form-grid -->
+
+          <div class="divider"></div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn-predict" id="predict-btn">
+              ▶&nbsp; Predict Annual Cost
+            </button>
+            <button type="button" class="btn-reset" id="reset-btn">
+              ⟳ Reset
+            </button>
+          </div>
+
+          <div class="error-msg" id="error-msg" role="alert"></div>
+
+        </form>
+      </div><!-- /.card-body -->
+    </div><!-- /#form-card -->
+
+    <!-- ── Result card (hidden until prediction) ────────────────────────── -->
+    <div class="card" id="result-section" role="region" aria-live="polite">
+
+      <!-- Cost display -->
+      <div class="result-header">
+        <div class="label">Predicted Annual Claim Cost</div>
+        <div class="result-cost">
+          <span class="currency">$</span>
+          <span id="result-cost-value">—</span>
+        </div>
+      </div>
+
+      <!-- Risk level + bar -->
+      <div class="risk-row">
+        <span class="risk-label-text">Risk Level</span>
+        <span class="risk-badge" id="risk-badge">
+          <span class="dot"></span>
+          <span id="risk-label-text">—</span>
+        </span>
+        <div class="risk-bar-wrap">
+          <div class="risk-bar-track">
+            <div class="seg seg-low"  id="bar-low"></div>
+            <div class="seg seg-med"  id="bar-med"></div>
+            <div class="seg seg-high" id="bar-high"></div>
+            <div class="seg seg-very" id="bar-very"></div>
+          </div>
+          <div class="risk-bar-labels">
+            <span>Low</span><span>Medium</span><span>High</span><span>Very High</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input summary chips -->
+      <div class="input-summary">
+        <div class="summary-title">Inputs Used</div>
+        <div class="summary-chips" id="summary-chips"></div>
+      </div>
+
+      <!-- New prediction button -->
+      <div class="result-footer">
+        <button class="btn-new" id="new-btn">⟳ Predict Another Member</button>
+      </div>
+
+    </div><!-- /#result-section -->
+
+    <p class="page-footer">
+      InsureCost-AI POC &nbsp;·&nbsp; Phase 3 &nbsp;·&nbsp;
+      Predictions are estimates based on 2,000 synthetic training records.
+      Not for clinical or actuarial use.
+    </p>
+
+  </main>
+
+  <!-- ── JavaScript ───────────────────────────────────────────────────────── -->
+  <script>
+    // ── Element references ────────────────────────────────────────────────
+    const form        = document.getElementById('predict-form');
+    const predictBtn  = document.getElementById('predict-btn');
+    const resetBtn    = document.getElementById('reset-btn');
+    const newBtn      = document.getElementById('new-btn');
+    const errorMsg    = document.getElementById('error-msg');
+    const resultSec   = document.getElementById('result-section');
+    const costValue   = document.getElementById('result-cost-value');
+    const riskBadge   = document.getElementById('risk-badge');
+    const riskText    = document.getElementById('risk-label-text');
+    const chips       = document.getElementById('summary-chips');
+
+    // ── Risk configuration ────────────────────────────────────────────────
+    const RISK_CONFIG = {
+      'Low':       { cls: 'low',       barId: 'bar-low'  },
+      'Medium':    { cls: 'medium',    barId: 'bar-med'  },
+      'High':      { cls: 'high',      barId: 'bar-high' },
+      'Very High': { cls: 'very-high', barId: 'bar-very' },
+    };
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function formatCost(n) {
+      return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(n);
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+    }
+
+    function clearError() {
+      errorMsg.textContent = '';
+      errorMsg.classList.remove('visible');
+      document.querySelectorAll('.error-field').forEach(el => el.classList.remove('error-field'));
+    }
+
+    function setLoading(loading) {
+      if (loading) {
+        predictBtn.disabled = true;
+        predictBtn.innerHTML = '<span class="spinner"></span> Predicting…';
+      } else {
+        predictBtn.disabled = false;
+        predictBtn.innerHTML = '▶&nbsp; Predict Annual Cost';
+      }
+    }
+
+    // ── Form submit handler ────────────────────────────────────────────────
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearError();
+
+      // Collect values
+      const payload = {
+        age:                     form.age.value.trim(),
+        gender:                  form.gender.value,
+        chronic_condition_count: form.chronic_condition_count.value.trim(),
+        prior_12m_cost:          form.prior_12m_cost.value.trim(),
+        er_visit_count_12m:      form.er_visit_count_12m.value.trim(),
+        inpatient_days_12m:      form.inpatient_days_12m.value.trim(),
+        comorbidity_index:       form.comorbidity_index.value.trim(),
+      };
+
+      // Client-side required check
+      const missing = Object.entries(payload)
+        .filter(([, v]) => v === '' || v === null)
+        .map(([k]) => k);
+      if (missing.length > 0) {
+        missing.forEach(k => {
+          const el = document.getElementById(k) || form[k];
+          if (el) el.classList.add('error-field');
+        });
+        showError('Please fill in all fields before predicting.');
+        return;
+      }
+
+      setLoading(true);
+      resultSec.classList.remove('visible');
+
+      try {
+        const res = await fetch('/api/predict', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'An error occurred. Please try again.');
+          return;
+        }
+
+        // ── Render result ────────────────────────────────────────────────
+        const cost = data.predicted_cost;
+        const risk = data.risk_level;
+
+        // Cost
+        costValue.textContent = formatCost(cost);
+
+        // Risk badge
+        riskBadge.className = 'risk-badge';
+        const cfg = RISK_CONFIG[risk] || RISK_CONFIG['High'];
+        riskBadge.classList.add(cfg.cls);
+        riskText.textContent = risk;
+
+        // Risk bar — activate the correct segment
+        ['bar-low','bar-med','bar-high','bar-very'].forEach(id => {
+          document.getElementById(id).classList.remove('active');
+        });
+        document.getElementById(cfg.barId).classList.add('active');
+
+        // Summary chips
+        chips.innerHTML = '';
+        const summaryData = [
+          ['Age', payload.age + ' yrs'],
+          ['Gender', payload.gender],
+          ['Chronic Cond.', payload.chronic_condition_count],
+          ['Prior Cost', '$' + formatCost(Number(payload.prior_12m_cost))],
+          ['ER Visits', payload.er_visit_count_12m],
+          ['Inpatient Days', payload.inpatient_days_12m],
+          ['Comorbidity Idx', payload.comorbidity_index],
+        ];
+        summaryData.forEach(([label, val]) => {
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.textContent = `${label}: ${val}`;
+          chips.appendChild(chip);
+        });
+
+        resultSec.classList.add('visible');
+        resultSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      } catch (err) {
+        showError('Network error. Please check your connection and try again.');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // ── Reset button ───────────────────────────────────────────────────────
+    function resetAll() {
+      form.reset();
+      clearError();
+      resultSec.classList.remove('visible');
+      costValue.textContent = '—';
+      riskText.textContent  = '—';
+      riskBadge.className   = 'risk-badge';
+      chips.innerHTML       = '';
+      ['bar-low','bar-med','bar-high','bar-very'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+      });
+      form.age.focus();
+    }
+
+    resetBtn.addEventListener('click', resetAll);
+    newBtn.addEventListener('click', resetAll);
+  </script>
+
+</body>
+</html>

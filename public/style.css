@@ -1,0 +1,415 @@
+/* ==========================================================================
+   style.css  —  InsureCost-AI Web Interface
+   ========================================================================== */
+
+/* ── Variables ────────────────────────────────────────────────────────────── */
+:root {
+  --navy:        #1F4E79;
+  --blue:        #2E75B6;
+  --light-blue:  #BDD7EE;
+  --bg:          #F0F4F9;
+  --card-bg:     #FFFFFF;
+  --border:      #D0DCE8;
+  --text:        #1A2533;
+  --text-muted:  #5A6A7A;
+  --input-bg:    #F8FAFC;
+
+  --risk-low:       #1E8449;
+  --risk-low-bg:    #E9F7EF;
+  --risk-med:       #D68910;
+  --risk-med-bg:    #FEF9E7;
+  --risk-high:      #C0392B;
+  --risk-high-bg:   #FDEDEC;
+  --risk-very:      #7D3C98;
+  --risk-very-bg:   #F5EEF8;
+
+  --radius:   10px;
+  --shadow:   0 2px 12px rgba(31, 78, 121, 0.10);
+  --shadow-lg:0 6px 28px rgba(31, 78, 121, 0.16);
+}
+
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 15px;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Navigation bar ───────────────────────────────────────────────────────── */
+nav {
+  background: var(--navy);
+  color: #fff;
+  padding: 0 2rem;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.nav-brand .icon {
+  font-size: 1.4rem;
+}
+.nav-brand h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.nav-brand span {
+  font-size: 0.82rem;
+  color: var(--light-blue);
+  font-weight: 400;
+  margin-left: 0.3rem;
+}
+.nav-badge {
+  background: rgba(255,255,255,0.15);
+  color: var(--light-blue);
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* ── Page layout ──────────────────────────────────────────────────────────── */
+.page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem 3rem;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.card-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff;
+  padding: 1.2rem 1.6rem;
+}
+.card-header h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.card-header p {
+  font-size: 0.82rem;
+  color: var(--light-blue);
+}
+.card-body {
+  padding: 1.6rem;
+}
+
+/* ── Form grid ────────────────────────────────────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem 1.4rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.2px;
+}
+label .hint {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-left: 5px;
+}
+
+input[type="number"],
+select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.94rem;
+  background: var(--input-bg);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+input[type="number"]:focus,
+select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(46,117,182,0.15);
+  background: #fff;
+}
+input.error-field {
+  border-color: var(--risk-high);
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
+}
+
+.field-hint {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+/* ── Divider ──────────────────────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.2rem 0;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 0.4rem;
+}
+.btn-predict {
+  flex: 1;
+  padding: 11px 20px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.97rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(31,78,121,0.25);
+}
+.btn-predict:hover { background: #163d61; box-shadow: var(--shadow-lg); }
+.btn-predict:active { transform: scale(0.98); }
+.btn-predict:disabled { background: #9BB0C7; cursor: not-allowed; box-shadow: none; }
+
+.btn-reset {
+  padding: 11px 18px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-reset:hover { background: var(--bg); color: var(--text); }
+
+/* ── Error message ────────────────────────────────────────────────────────── */
+.error-msg {
+  display: none;
+  background: var(--risk-high-bg);
+  border: 1px solid #F1948A;
+  border-left: 4px solid var(--risk-high);
+  color: #922B21;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.87rem;
+  margin-top: 0.8rem;
+}
+.error-msg.visible { display: block; }
+
+/* ── Loading spinner ──────────────────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Result card ──────────────────────────────────────────────────────────── */
+#result-section {
+  display: none;
+  margin-top: 1.5rem;
+  animation: slideDown 0.35s ease;
+}
+#result-section.visible { display: block; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.result-header {
+  padding: 1.1rem 1.6rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+}
+.result-header .label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+.result-cost {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.result-cost .currency {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--blue);
+  vertical-align: super;
+  margin-right: 2px;
+}
+
+/* ── Risk badge ───────────────────────────────────────────────────────────── */
+.risk-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.6rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.risk-label-text {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 70px;
+}
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 0.93rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.risk-badge .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.risk-badge.low       { background: var(--risk-low-bg);  color: var(--risk-low);  border: 1.5px solid #A9DFBF; }
+.risk-badge.low .dot  { background: var(--risk-low); }
+.risk-badge.medium    { background: var(--risk-med-bg);  color: var(--risk-med);  border: 1.5px solid #FAD7A0; }
+.risk-badge.medium .dot { background: var(--risk-med); }
+.risk-badge.high      { background: var(--risk-high-bg); color: var(--risk-high); border: 1.5px solid #F1948A; }
+.risk-badge.high .dot { background: var(--risk-high); }
+.risk-badge.very-high { background: var(--risk-very-bg); color: var(--risk-very); border: 1.5px solid #C39BD3; }
+.risk-badge.very-high .dot { background: var(--risk-very); }
+
+/* ── Risk colour bar ──────────────────────────────────────────────────────── */
+.risk-bar-wrap {
+  flex: 1;
+  min-width: 200px;
+}
+.risk-bar-track {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.risk-bar-track .seg {
+  flex: 1;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+.risk-bar-track .seg.active { opacity: 1; }
+.seg-low  { background: var(--risk-low); }
+.seg-med  { background: var(--risk-med); }
+.seg-high { background: var(--risk-high); }
+.seg-very { background: var(--risk-very); }
+.risk-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+  padding: 0 1px;
+}
+
+/* ── Input summary ────────────────────────────────────────────────────────── */
+.input-summary {
+  padding: 0.8rem 1.6rem;
+  border-bottom: 1px solid var(--border);
+  background: #FAFCFF;
+}
+.input-summary .summary-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+.summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  background: #EBF3FB;
+  color: var(--navy);
+  font-size: 0.78rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--light-blue);
+}
+
+/* ── Result footer button ─────────────────────────────────────────────────── */
+.result-footer {
+  padding: 0.9rem 1.6rem;
+}
+.btn-new {
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  color: var(--blue);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1.5px solid var(--light-blue);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-new:hover { background: #EBF3FB; }
+
+/* ── Footer note ──────────────────────────────────────────────────────────── */
+.page-footer {
+  text-align: center;
+  margin-top: 1.8rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 540px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full-width { grid-column: 1; }
+  .result-cost { font-size: 2rem; }
+  .risk-row { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+  .risk-bar-wrap { width: 100%; }
+}

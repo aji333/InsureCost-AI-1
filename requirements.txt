@@ -1,0 +1,13 @@
+# =============================================================================
+# requirements.txt  —  InsureCost-AI Vercel Serverless Function Dependencies
+# =============================================================================
+# Vercel reads this file and installs these packages before going live.
+# Only packages needed by api/predict.py are listed here.
+#
+# For local development, also install flask:
+#   pip install flask scikit-learn numpy joblib
+# =============================================================================
+
+scikit-learn==1.4.2
+numpy==1.26.4
+joblib==1.4.2
