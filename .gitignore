@@ -29,3 +29,5 @@ Thumbs.db
 # They must be committed so Vercel can bundle them in the deployment.
 # model.pkl
 # scaler.pkl
+
+.vercel

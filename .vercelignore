@@ -1,0 +1,7 @@
+.vs
+__pycache__
+*.py[cod]
+local_app.py
+train.py
+health_insurance_training_data.csv
+.claude
